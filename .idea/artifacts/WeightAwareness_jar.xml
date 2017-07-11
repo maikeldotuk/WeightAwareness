@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="WeightAwareness:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/WeightAwareness_jar</output-path>
+    <root id="archive" name="WeightAwareness.jar">
+      <element id="module-output" name="WeightAwareness" />
+    </root>
+  </artifact>
+</component>

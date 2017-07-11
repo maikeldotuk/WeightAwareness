@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="WeightAwareness">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/WeightAwareness.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
