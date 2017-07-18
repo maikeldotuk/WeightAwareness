@@ -119,14 +119,18 @@ public class WeightAwareness extends Application {
         final CategoryAxis xAxis = new CategoryAxis();
         //need to modify this to get the max and minimum there. 
         final NumberAxis yAxis = new NumberAxis(minWeight, maxWeight, 0.5);
-        xAxis.setLabel("Day");
+        //xAxis.setLabel("Day");
         final LineChart<String, Number> lineChart
                 = new LineChart<>(xAxis, yAxis);
+        lineChart.getXAxis().setTickLabelsVisible(false);
+        lineChart.getXAxis().setOpacity(0);
+        lineChart.setStyle("CHART_COLOR_1: green;");
 
         lineChart.setTitle("Weight & Body Fat Monitoring");
 
         XYChart.Series series1 = new XYChart.Series();
         series1.setName("Weight (kgs)");
+        lineChart.setLegendVisible(false);
 
         //XYChart.Series series2 = new XYChart.Series();
         //series2.setName("Body Fat %");
@@ -156,7 +160,7 @@ public class WeightAwareness extends Application {
         }
 
         lineChart2.getData().add(series2);
-
+        lineChart2.setLegendVisible(false);
         //Ideally you want them one over the other one. 
         GridPane rootNode = new GridPane();
 
