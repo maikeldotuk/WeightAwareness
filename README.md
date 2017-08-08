@@ -21,6 +21,6 @@ Example of how it looks as of today (19th of July of 2017).
 
 ![Screen Capture of the app](https://raw.githubusercontent.com/maikeldotuk/WeightAwareness/master/readmefiles/Capture.JPG)
 
-##LICENCE
+## Licence
 
 Licence under MIT licence [more info](LICENCE)
