@@ -20,3 +20,7 @@ You see the progress by comparing the graph on the top (weight) with the curve o
 Example of how it looks as of today (19th of July of 2017). 
 
 ![Screen Capture of the app](https://raw.githubusercontent.com/maikeldotuk/WeightAwareness/master/readmefiles/Capture.JPG)
+
+##LICENCE
+
+Licence under MIT licence [more info](LICENCE)
