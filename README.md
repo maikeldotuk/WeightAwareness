@@ -23,4 +23,4 @@ Example of how it looks as of today (19th of July of 2017).
 
 ## Licence
 
-Licence under MIT licence [more info](LICENCE)
+Licence under MIT licence [more info](LICENSE)
