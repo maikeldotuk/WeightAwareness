@@ -27,6 +27,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import java.time.LocalDate;
 
 /**
  * @author Miguel Frias Mosquea
@@ -107,7 +108,7 @@ public class WeightAwareness extends Application {
         //XYChart.Series series2 = new XYChart.Series();
         //series2.setName("Body Fat %");
         for (Measure aMeasure : theSingleton.getLastTen()) {
-            series1.getData().add(new XYChart.Data(aMeasure.getFormattedDate(), aMeasure.weight));
+            series1.getData().add(new XYChart.Data(prettyDate(aMeasure), aMeasure.weight));
         }
 
         lineChart.getData().add(series1);
@@ -127,7 +128,7 @@ public class WeightAwareness extends Application {
 
         for (Measure aMeasure : theSingleton.getLastTen()) {
 
-            series2.getData().add(new XYChart.Data(aMeasure.getFormattedDate(), aMeasure.bodyFat));
+            series2.getData().add(new XYChart.Data(prettyDate(aMeasure), aMeasure.bodyFat));
         }
 
         lineChart2.getData().add(series2);
@@ -198,7 +199,7 @@ public class WeightAwareness extends Application {
                         series2.getData().clear();
                         for (Measure aMeasure : theSingleton.getLastTen()) {
 
-                            series2.getData().add(new XYChart.Data(aMeasure.getFormattedDate(), aMeasure.bodyFat));
+                            series2.getData().add(new XYChart.Data(prettyDate(aMeasure), aMeasure.bodyFat));
                         }
 
                         //modify graph for weight:
@@ -207,7 +208,7 @@ public class WeightAwareness extends Application {
 
                         for (Measure aMeasure : theSingleton.getLastTen()) {
 
-                            series1.getData().add(new XYChart.Data(aMeasure.getFormattedDate(), aMeasure.weight));
+                            series1.getData().add(new XYChart.Data(prettyDate(aMeasure), aMeasure.weight));
                         }
 
                         //Refresh max and min
@@ -287,5 +288,21 @@ public class WeightAwareness extends Application {
         maxWeight += separator;
     }
 
+    String prettyDate(Measure aMeasure) {
+        LocalDate todayDate = LocalDate.now();
+        LocalDate yesterdayDate = todayDate.minusDays(1);
+        String todaysDate = todayDate.format(Measure.aFormat);
+        String yesterdaysDate = yesterdayDate.format(Measure.aFormat);
+        String formatedCurrentDate = aMeasure.getFormattedDate();
+
+        if (todaysDate.equals(formatedCurrentDate)) {
+            return "Today";
+        } else if (yesterdaysDate.equals(formatedCurrentDate)) {
+            return "Yesterday";
+        } else {
+            return aMeasure.getFormattedDate();
+        }
+
+    }
 
 }
