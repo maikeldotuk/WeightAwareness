@@ -8,7 +8,7 @@ package weightawareness;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-
+import java.util.Collections;
 /**
  * @author Miguel Frias Mosquea
  */
@@ -34,6 +34,7 @@ public final class MeasuresCoord {
         for (int x = 1; x<11; x++) {
             shortened.add(this.measures.get(this.measures.size()-x));
         }
+        Collections.reverse(shortened);
         return shortened;
 
     }
