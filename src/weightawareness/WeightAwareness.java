@@ -5,12 +5,6 @@
  */
 package weightawareness;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,8 +16,10 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -31,43 +27,28 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 
 /**
- * @author miguelfriasmosquea
+ * @author Miguel Frias Mosquea
  */
 public class WeightAwareness extends Application {
 
-    Double minWeight, maxWeight, minBf, maxBf;
     final double separator = 0.2;
-    final double maxVariange = 1.5;
+    final MeasuresCoord theSingleton = new MeasuresCoord();
+    Double minWeight, maxWeight, minBf, maxBf;
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, FileNotFoundException, ParseException {
-        // TODO code application logic here
+    public static void main(String[] args)  {
 
         launch(args);
 
-        //Example of adding a measure, it takes the day of today. 
-        //theSingleton.addMeasure(69.3, 15.1);
-        //Example of showing them all. 
-        /*theSingleton.getAll().forEach((aMeasure) -> {
-            System.out.println(aMeasure);
-        });
-
-        //Example of showing the last measure.
-        Measure aMeasure = theSingleton.getLast();
-        System.out.println("The last added:" + aMeasure);
-         */
     }
 
     @Override
-    public void start(Stage myStage) throws IOException, FileNotFoundException, ParseException {
-        MeasuresCoord theSingleton = new MeasuresCoord();
+    public void start(Stage myStage)  {
+        theSingleton.getLastTen();
 
         myStage.setTitle("WeightAwareness App");
         GridPane grid = new GridPane();
@@ -76,29 +57,20 @@ public class WeightAwareness extends Application {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 0, 0, 0));
 
-        Text scenetitle = new Text("Add Today's Weight");
-        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        grid.add(scenetitle, 0, 0, 2, 1);
+        Text editWeightFormTitle = new Text("Add Today's Weight");
+        editWeightFormTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        grid.add(editWeightFormTitle, 0, 0, 2, 1);
 
-        Label userName = new Label("Weight:");
-        grid.add(userName, 0, 1);
-
-        TextField weightField = new TextField();
-        grid.add(weightField, 1, 1);
-
-        Label pw = new Label("Body Fat:");
-        grid.add(pw, 0, 2);
-
-        TextField bodyfatField = new TextField();
-        grid.add(bodyfatField, 1, 2);
-
-        //Date field
-        Label dateLab = new Label("Date:");
+        Label weightLabel = new Label("Weight:"), bodyFatLabel = new Label("Body Fat:"), dateLab = new Label("Date:");
+        grid.add(weightLabel, 0, 1);
+        grid.add(bodyFatLabel, 0, 2);
         grid.add(dateLab, 0, 3);
 
-        TextField dateField = new TextField();
-        dateField.setDisable(true);
+        TextField weightField = new TextField(), bodyfatField = new TextField(), dateField  = new TextField();
+        grid.add(weightField, 1, 1);
+        grid.add(bodyfatField, 1, 2);
         grid.add(dateField, 1, 3);
+        dateField.setDisable(true);
 
         Button btn = new Button("Add Weight");
         HBox hbBtn = new HBox(10);
@@ -114,7 +86,7 @@ public class WeightAwareness extends Application {
         grid.add(hbBtn2, 1, 5);
 
         //2nd scene
-        calcFigures(theSingleton);
+        calculateGraphEdges();
 
         final CategoryAxis xAxis = new CategoryAxis();
         //need to modify this to get the max and minimum there. 
@@ -134,9 +106,8 @@ public class WeightAwareness extends Application {
 
         //XYChart.Series series2 = new XYChart.Series();
         //series2.setName("Body Fat %");
-        for (Measure aMeasure : theSingleton.getAll()) {
-            series1.getData().add(new XYChart.Data(aMeasure.getFormatedDate(), aMeasure.weight));
-            //series2.getData().add(new XYChart.Data(aMeasure.getFormatedDate(), aMeasure.bodyFat));
+        for (Measure aMeasure : theSingleton.getLastTen()) {
+            series1.getData().add(new XYChart.Data(aMeasure.getFormattedDate(), aMeasure.weight));
         }
 
         lineChart.getData().add(series1);
@@ -154,9 +125,9 @@ public class WeightAwareness extends Application {
         //XYChart.Series series2 = new XYChart.Series();
         series2.setName("Body Fat %");
 
-        for (Measure aMeasure : theSingleton.getAll()) {
+        for (Measure aMeasure : theSingleton.getLastTen()) {
 
-            series2.getData().add(new XYChart.Data(aMeasure.getFormatedDate(), aMeasure.bodyFat));
+            series2.getData().add(new XYChart.Data(aMeasure.getFormattedDate(), aMeasure.bodyFat));
         }
 
         lineChart2.getData().add(series2);
@@ -189,9 +160,9 @@ public class WeightAwareness extends Application {
                     try {
                         weightField.setText(Double.toString(newVal.weight));
                         bodyfatField.setText(Double.toString(newVal.bodyFat));
-                        dateField.setText(newVal.getFormatedDate());
+                        dateField.setText(newVal.getFormattedDate());
                         btn.setText("Modify Weight");
-                        scenetitle.setText("Modify Weight");
+                        editWeightFormTitle.setText("Modify Weight");
 
                     } catch (NullPointerException ae) {
                         //This exception is thrown because newVal is null when you click "modify weight".
@@ -219,28 +190,28 @@ public class WeightAwareness extends Application {
             public void handle(ActionEvent e) {
                 actiontarget.setFill(Color.FIREBRICK);
                 try {
-                    if (addWeight(weightField.getText(), bodyfatField.getText(), dateField.getText(), theSingleton)) {
+                    if (addWeight(weightField.getText(), bodyfatField.getText(), dateField.getText())) {
 
                         actiontarget.setText("Weight Modified");
 
 //Modify graph for bf
                         series2.getData().clear();
-                        for (Measure aMeasure : theSingleton.getAll()) {
+                        for (Measure aMeasure : theSingleton.getLastTen()) {
 
-                            series2.getData().add(new XYChart.Data(aMeasure.getFormatedDate(), aMeasure.bodyFat));
+                            series2.getData().add(new XYChart.Data(aMeasure.getFormattedDate(), aMeasure.bodyFat));
                         }
 
                         //modify graph for weight:
                         series1.getData().clear();
 
 
-                        for (Measure aMeasure : theSingleton.getAll()) {
+                        for (Measure aMeasure : theSingleton.getLastTen()) {
 
-                            series1.getData().add(new XYChart.Data(aMeasure.getFormatedDate(), aMeasure.weight));
+                            series1.getData().add(new XYChart.Data(aMeasure.getFormattedDate(), aMeasure.weight));
                         }
 
                         //Refresh max and min
-                        calcFigures(theSingleton);
+                        calculateGraphEdges();
                         //yAxis = new NumberAxis(minWeight, maxWeight, 0.5);
                         yAxis.setLowerBound(minWeight);
                         yAxis.setUpperBound(maxWeight);
@@ -260,10 +231,7 @@ public class WeightAwareness extends Application {
                         alert.showAndWait();
                         //actiontarget.setText("Already weighted today");
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(WeightAwareness.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ParseException ex) {
-                    Logger.getLogger(WeightAwareness.class.getName()).log(Level.SEVERE, null, ex);
+
                 } catch (NumberFormatException ex) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
@@ -280,29 +248,25 @@ public class WeightAwareness extends Application {
         myStage.show();
     }
 
-    @Override
-    public void stop() {
-        System.out.println("Inside the Stop method");
-    }
 
-    public boolean addWeight(String weight, String bodyfat, String date, MeasuresCoord sinton) throws IOException, ParseException {
+
+    public boolean addWeight(String weight, String bodyfat, String date)  {
         Double w = Double.parseDouble(weight);
         Double bf = Double.parseDouble(bodyfat);
         //Example of adding a measure, it takes the day of today.
-        MeasuresCoord sinton1 = sinton;
-        return sinton1.addMeasure(w, bf, date);
+        //MeasuresCoord sinton1 = sinton;
+        return theSingleton.addMeasure(w, bf, date);
 
         // you need to make this error-proof. 
     }
 
-    public void calcFigures(MeasuresCoord sinton) {
-        MeasuresCoord aSinton = sinton;
-        //Double minWeight, maxWeight, minBf, maxBf;
+    public void calculateGraphEdges() {
+
         minWeight = 200.0;
         maxWeight = 0.0;
         minBf = 200.00;
         maxBf = 0.0;
-        for (Measure aMeasure : sinton.getAll()) {
+        for (Measure aMeasure : theSingleton.getLastTen()) {
             if (aMeasure.bodyFat > maxBf) {
                 maxBf = aMeasure.bodyFat;
             }
@@ -321,12 +285,7 @@ public class WeightAwareness extends Application {
         maxBf += separator;
         minWeight -= separator;
         maxWeight += separator;
-
-        System.out.println("minWeight:" + minWeight + "\nmaxWeight:" + maxWeight + "\nminBf:" + minBf + "\nmaxBf:" + maxBf);
     }
 
-    public void updateGraphs() {
-
-    }
 
 }

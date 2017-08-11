@@ -5,73 +5,55 @@
  */
 package weightawareness;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
- * @author miguelfriasmosquea
+ * @author Miguel Frias Mosquea
  */
 public class Measure {
 
     double weight;
     double bodyFat;
-    Calendar date;
+    LocalDate theDate;
+    static final DateTimeFormatter aFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    Measure(double weight, double bodyFat, Calendar date)
+
+    Measure(double weight, double bodyFat, LocalDate date)
     {
         this.weight = weight;
         this.bodyFat = bodyFat;
-        this.date = date;
+        this.theDate = date;
     }
     
-        Measure(double weight, double bodyFat, String date) throws ParseException
+        Measure(double weight, double bodyFat, String date)
     {
         this.weight = weight;
         this.bodyFat = bodyFat;
-        this.date = convertStringToCal(date);
+        this.theDate = LocalDate.parse(date,Measure.aFormat);
     }
     
     @Override
     public String toString() {
-        String humanDate = getFormatedDate();
+        String humanDate = getFormattedDate();
         String description = humanDate + "\t" + weight + "Kgs\t" + bodyFat + "% bf";
         return description;
     }
     
-    public String getFormatedDate() {
-        int theMonth = date.get(Calendar.MONTH) +1;
-        int theDate = date.get(Calendar.DATE);
-        String theStringMonth, theStringDate;
-        
-        //This could be done with a lambda
-        if (theMonth <10) {
-            theStringMonth = "0" + theMonth;
-        } else {
-            theStringMonth = "" + theMonth;
-        }
-        
-        if (theDate <10) {
-            theStringDate = "0" + theDate;
-        } else {
-            theStringDate = "" + theDate;
-        }
-        return theStringDate + "/" + theStringMonth + "/" + date.get(Calendar.YEAR);
+    public String getFormattedDate() {
+        return this.theDate.format(Measure.aFormat);
     }
     
-    public static Calendar convertStringToCal(String theString) throws ParseException {
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-        cal.setTime(sdf.parse(theString));
-        return cal;
+    public static LocalDate convertStringToLocalDate(String theString)  {
+
+        return LocalDate.parse(theString,Measure.aFormat);
     }
     
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Measure)) return false;
         Measure anotherMeasure = (Measure) obj;
-        return this.getFormatedDate().equals(anotherMeasure.getFormatedDate());
+        return this.getFormattedDate().equals(anotherMeasure.getFormattedDate());
     }
 }

@@ -5,31 +5,19 @@
  */
 package weightawareness;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.text.ParseException;
+import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 
 /**
- *
- * @author maike
+ * @author Miguel Frias Mosquea
  */
 public final class MeasuresCoord {
 
     ArrayList<Measure> measures;
     File file;
 
-    MeasuresCoord() throws IOException, FileNotFoundException, ParseException {
-
-        //Task 1, check the file exist and if not, create it. Pg 460 of Sybex OCP
+    MeasuresCoord() {
         file = new File("data.txt");
         if (file.exists()) {
             measures = readFile();
@@ -37,24 +25,30 @@ public final class MeasuresCoord {
             measures = new ArrayList<Measure>();
         }
     }
-
     public ArrayList<Measure> getAll() {
         return this.measures;
     }
 
-    public boolean addMeasure(double weight, double bodyfat, String aDate) throws IOException, ParseException {
-        Measure aMeasure = new Measure(weight, bodyfat, Calendar.getInstance());
+    public ArrayList<Measure> getLastTen() {
+        ArrayList<Measure> shortened = new ArrayList<>();
+        for (int x = 1; x<11; x++) {
+            shortened.add(this.measures.get(this.measures.size()-x));
+        }
+        return shortened;
 
+    }
+
+
+    public boolean addMeasure(double weight, double bodyfat, String aDate) {
+        Measure aMeasure = new Measure(weight, bodyfat, LocalDate.now());
         if (measures.isEmpty()) {
             measures.add(aMeasure);
             System.out.println("New data added");
             updateFile();
             return true;
         } else {
-
             if (aDate.isEmpty()) {
                 Measure lastMeasure = measures.get(measures.size() - 1);
-
                 //This prevent adding another measure for today.
                 if (aMeasure.equals(lastMeasure)) {
                     System.out.println("Date already added");
@@ -66,9 +60,9 @@ public final class MeasuresCoord {
                     return true;
                 }
             } else {
-                Calendar theDate = Measure.convertStringToCal(aDate);
+                LocalDate theDate = Measure.convertStringToLocalDate(aDate);
                 Measure newMeasure = new Measure(weight, bodyfat, theDate);
-                for (Measure theMeasure: measures) {
+                for (Measure theMeasure : measures) {
                     if (theMeasure.equals(newMeasure)) {
                         measures.set(measures.indexOf(theMeasure), newMeasure);
                         updateFile();
@@ -76,26 +70,24 @@ public final class MeasuresCoord {
                     }
                 }
                 return false;
-               
             }
-
         }
-
     }
 
-    public void updateFile() throws IOException {
+    public void updateFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             for (Measure aMeasure : measures) {
-                String sentence = aMeasure.weight + "\t" + aMeasure.bodyFat + "\t" + aMeasure.getFormatedDate();
+                String sentence = aMeasure.weight + "\t" + aMeasure.bodyFat + "\t" + aMeasure.getFormattedDate();
                 writer.write(sentence);
                 writer.newLine();
             }
-            System.out.println("File Writen");
+            System.out.println("File Written");
+        } catch (IOException ex) {
+            System.out.println(ex);
         }
-
     }
 
-    public ArrayList<Measure> readFile() throws FileNotFoundException, IOException, ParseException {
+    public ArrayList<Measure> readFile() {
         ArrayList<Measure> theMeasures = new ArrayList<>();
         System.out.println("Loading File");
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -105,16 +97,9 @@ public final class MeasuresCoord {
                 Measure aMeasure = new Measure(Double.parseDouble(anArray[0]), Double.parseDouble(anArray[1]), anArray[2]);
                 theMeasures.add(aMeasure);
             }
+        } catch (IOException ex) {
+            System.out.println(ex);
         }
         return theMeasures;
     }
-
-    public Measure getLast() {
-        return this.measures.get(this.measures.size() - 1);
-    }
-
-    public void modMeasureByDate() {
-        //TODO
-    }
-
 }
