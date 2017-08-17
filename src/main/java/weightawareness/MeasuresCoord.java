@@ -9,38 +9,45 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import org.apache.commons.lang3.builder.*;
+
 /**
  * @author Miguel Frias Mosquea
  */
 public final class MeasuresCoord {
 
-    ArrayList<Measure> measures;
-    File file;
+    private ArrayList<Measure> measures;
+    private File file;
 
     MeasuresCoord() {
         file = new File("data.txt");
         if (file.exists()) {
             measures = readFile();
         } else {
-            measures = new ArrayList<Measure>();
+            measures = new ArrayList<>();
         }
-    }
-    public ArrayList<Measure> getAll() {
-        return this.measures;
     }
 
-    public ArrayList<Measure> getLastTen() {
+    ArrayList<Measure> getAll() {
+
+        return this.measures;
+
+    }
+
+    ArrayList<Measure> getLastTen() {
         ArrayList<Measure> shortened = new ArrayList<>();
-        for (int x = 1; x<11; x++) {
-            shortened.add(this.measures.get(this.measures.size()-x));
+        for (int x = 1; x < 11; x++) {
+            shortened.add(this.measures.get(this.measures.size() - x));
         }
         Collections.reverse(shortened);
+
         return shortened;
 
     }
 
 
-    public boolean addMeasure(double weight, double bodyfat, String aDate) {
+    boolean addMeasure(double weight, double bodyfat, String aDate) {
         Measure aMeasure = new Measure(weight, bodyfat, LocalDate.now());
         if (measures.isEmpty()) {
             measures.add(aMeasure);
@@ -75,7 +82,7 @@ public final class MeasuresCoord {
         }
     }
 
-    public void updateFile() {
+    void updateFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             for (Measure aMeasure : measures) {
                 String sentence = aMeasure.weight + "\t" + aMeasure.bodyFat + "\t" + aMeasure.getFormattedDate();
@@ -84,11 +91,11 @@ public final class MeasuresCoord {
             }
             System.out.println("File Written");
         } catch (IOException ex) {
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
         }
     }
 
-    public ArrayList<Measure> readFile() {
+    ArrayList<Measure> readFile() {
         ArrayList<Measure> theMeasures = new ArrayList<>();
         System.out.println("Loading File");
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -99,8 +106,14 @@ public final class MeasuresCoord {
                 theMeasures.add(aMeasure);
             }
         } catch (IOException ex) {
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
         }
         return theMeasures;
+    }
+
+    // Just a test with Apache Commons
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

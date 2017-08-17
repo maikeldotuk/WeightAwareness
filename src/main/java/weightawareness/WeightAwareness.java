@@ -27,6 +27,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 import java.time.LocalDate;
 
 /**
@@ -34,21 +35,21 @@ import java.time.LocalDate;
  */
 public class WeightAwareness extends Application {
 
-    final double separator = 0.2;
-    final MeasuresCoord theSingleton = new MeasuresCoord();
-    Double minWeight, maxWeight, minBf, maxBf;
+    private final double separator = 0.2;
+    private final MeasuresCoord theSingleton = new MeasuresCoord();
+    private Double minWeight, maxWeight, minBf, maxBf;
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
 
         launch(args);
 
     }
 
     @Override
-    public void start(Stage myStage)  {
+    public void start(Stage myStage) {
         theSingleton.getLastTen();
 
         myStage.setTitle("WeightAwareness App");
@@ -67,7 +68,7 @@ public class WeightAwareness extends Application {
         grid.add(bodyFatLabel, 0, 2);
         grid.add(dateLab, 0, 3);
 
-        TextField weightField = new TextField(), bodyfatField = new TextField(), dateField  = new TextField();
+        TextField weightField = new TextField(), bodyfatField = new TextField(), dateField = new TextField();
         grid.add(weightField, 1, 1);
         grid.add(bodyfatField, 1, 2);
         grid.add(dateField, 1, 3);
@@ -130,6 +131,9 @@ public class WeightAwareness extends Application {
 
             series2.getData().add(new XYChart.Data(prettyDate(aMeasure), aMeasure.bodyFat));
         }
+
+        //Just a test of Apache Commons toString builder.
+        System.out.println(theSingleton.toString());
 
         lineChart2.getData().add(series2);
         lineChart2.setLegendVisible(false);
@@ -250,8 +254,7 @@ public class WeightAwareness extends Application {
     }
 
 
-
-    public boolean addWeight(String weight, String bodyfat, String date)  {
+    private boolean addWeight(String weight, String bodyfat, String date) {
         Double w = Double.parseDouble(weight);
         Double bf = Double.parseDouble(bodyfat);
         //Example of adding a measure, it takes the day of today.
@@ -261,7 +264,7 @@ public class WeightAwareness extends Application {
         // you need to make this error-proof. 
     }
 
-    public void calculateGraphEdges() {
+    private void calculateGraphEdges() {
 
         minWeight = 200.0;
         maxWeight = 0.0;
@@ -288,7 +291,7 @@ public class WeightAwareness extends Application {
         maxWeight += separator;
     }
 
-    String prettyDate(Measure aMeasure) {
+    private String prettyDate(Measure aMeasure) {
         LocalDate todayDate = LocalDate.now();
         LocalDate yesterdayDate = todayDate.minusDays(1);
         String todaysDate = todayDate.format(Measure.aFormat);
